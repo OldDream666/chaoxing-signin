@@ -19,7 +19,22 @@ import { PromptsOptions, addressPrompts, monitorPromptsQuestions } from './confi
 const JSDOM = new jsdom.JSDOM('', { url: 'https://im.chaoxing.com/webim/me' });
 (globalThis.window as any) = JSDOM.window;
 (globalThis.WebSocket as any) = WebSocket;
-globalThis.navigator = JSDOM.window.navigator;
+
+// 兼容 Node 20+，避免直接赋值 navigator
+if (!('navigator' in globalThis)) {
+  (globalThis as any).navigator = JSDOM.window.navigator;
+} else {
+  try {
+    Object.defineProperty(globalThis, 'navigator', {
+      value: JSDOM.window.navigator,
+      configurable: true,
+      writable: true,
+    });
+  } catch (e) {
+    // Node 20+ navigator 只读，忽略
+  }
+}
+
 globalThis.location = JSDOM.window.location;
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
