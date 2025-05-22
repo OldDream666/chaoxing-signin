@@ -4,7 +4,7 @@ const { join } = require('path');
 
 const options = {
   windowsHide: true,
-  stdio: 'inherit',
+  stdio: 'pipe',
   cwd: join(__dirname, '../../'),
 };
 
